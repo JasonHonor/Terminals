@@ -27,6 +27,7 @@ namespace Unified.Encryption
 
     public byte[] Decrypt(byte[] bytesData, byte[] bytesKey)
     {
+#if false
       MemoryStream memoryStream = new MemoryStream();
       transformer.IV = initVec;
       ICryptoTransform iCryptoTransform = transformer.GetCryptoServiceProvider(bytesKey);
@@ -43,7 +44,25 @@ namespace Unified.Encryption
       {
         throw new Exception(String.Concat("Error while writing encrypted data to the stream: \n", e.Message));
       }
+#else
+            if (bytesData==null)
+                return null;
+
+            Byte[] toEncryptArray = bytesData;
+
+            RijndaelManaged rm = new RijndaelManaged
+            {
+                Key = bytesKey,
+                Mode = CipherMode.ECB,
+                Padding = PaddingMode.PKCS7
+            };
+
+            ICryptoTransform cTransform = rm.CreateDecryptor();
+            Byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return resultArray;
+#endif
+        }
     }
-  }
 
 }

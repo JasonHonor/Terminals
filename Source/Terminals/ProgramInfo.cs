@@ -137,7 +137,7 @@ namespace Terminals
 
             internal static string GetAboutText(string persistenceId)
             {
-                return string.Format("{0} ({1} store)", aboutText, persistenceId);
+                return string.Format("Plavy.{0} ({1} store)", aboutText, persistenceId);
             }
         }
     }

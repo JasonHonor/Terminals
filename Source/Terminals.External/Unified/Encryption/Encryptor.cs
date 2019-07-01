@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Unified.Encryption {
-    public class Encryptor {
+namespace Unified.Encryption
+{
+    public class Encryptor
+    {
         private EncryptTransformer transformer;
 
         private byte[] initVec;
@@ -11,27 +13,35 @@ namespace Unified.Encryption {
         private byte[] encKey;
 
 
-        public byte[] IV {
-            get {
+        public byte[] IV
+        {
+            get
+            {
                 return initVec;
             }
 
-            set {
+            set
+            {
                 initVec = value;
             }
         }
 
-        public byte[] Key {
-            get {
+        public byte[] Key
+        {
+            get
+            {
                 return encKey;
             }
         }
 
-        public Encryptor(EncryptionAlgorithm algId) {
+        public Encryptor(EncryptionAlgorithm algId)
+        {
             transformer = new EncryptTransformer(algId);
         }
 
-        public byte[] Encrypt(byte[] bytesData, byte[] bytesKey) {
+        public byte[] Encrypt(byte[] bytesData, byte[] bytesKey)
+        {
+#if false
             MemoryStream memoryStream = new MemoryStream();
             transformer.IV = initVec;
             ICryptoTransform iCryptoTransform = transformer.GetCryptoServiceProvider(bytesKey);
@@ -47,7 +57,25 @@ namespace Unified.Encryption {
             cryptoStream.FlushFinalBlock();
             cryptoStream.Close();
             return memoryStream.ToArray();
-        }
-    }
+            }
+#else
+            if (bytesData==null) return null;
+            Byte[] toEncryptArray = bytesData;
 
+            RijndaelManaged rm = new RijndaelManaged
+            {
+                Key = bytesKey,
+                Mode = CipherMode.ECB,
+                Padding = PaddingMode.PKCS7
+            };
+
+            ICryptoTransform cTransform = rm.CreateEncryptor();
+            Byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return resultArray;
+#endif
+
+        }
+
+    }
 }
